@@ -10,9 +10,39 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+      button {
+        font-weight: bold !important;
+      }
+      input {
+        width: 20rem;
+        background-color: rgb(70, 44, 44);
+        border: none;
+        color: white;
+        padding: 4px;
+        border-radius: 10px;
+      }
+      input:focus {
+        outline: none;
+      }
+      .food {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+      body::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
   </head>
-  <body class="bg-black text-light">
+  <body>
     <div class="container my-3 text-center">
       <button id="indian" type="button" class="btn btn-outline-primary mx-3">
         Indian
@@ -33,8 +63,78 @@
         Russian
       </button>
     </div>
-    <div class="container text-center"><input type="text" id="search" /></div>
+    <div class="container text-center">
+      <input type="text" id="search" placeholder="Search recipes..." />
+    </div>
     <div class="food"></div>
-    <script src="/21_Project5_food_recipe/index.js"></script>
+    <script>
+      let food = document.querySelector(".food");
+      let indian = document.querySelector("#indian");
+      let canadian = document.querySelector("#canadian");
+      let american = document.querySelector("#american");
+      let thai = document.querySelector("#thai");
+      let british = document.querySelector("#british");
+      let russian = document.querySelector("#russian");
+      let recipe;
+
+      const fetchData = async (area) => {
+        const api = await fetch(
+          `https://www.themealdb.com/api/json/v1/1/filter.php?a=${area}`
+        );
+        const data = await api.json();
+        recipe = data.meals;
+        showData(recipe);
+      };
+
+      const serachRecipe = () => {
+        let input = document.querySelector("#search");
+        input.addEventListener("keydown", async (e) => {
+          if (e.key === "Enter") {
+            let inputValue = input.value;
+            const api = await fetch(
+              `https://www.themealdb.com/api/json/v1/1/search.php?s=${inputValue}`
+            );
+            const data = await api.json();
+            recipe = data.meals;
+            showData(recipe);
+          }
+        });
+      };
+
+      serachRecipe();
+
+      let showData = (recipe) => {
+        food.innerHTML = recipe
+          .map(
+            (meal) => `<div style="text-align:center"><div>
+          <img src=${meal.strMealThumb} style="width:240px;border-radius:10px;border:2px solid blue;" />
+        </div>
+        <h5 style="margin:10px;">${meal.strMeal}</h5>
+        </div>`
+          )
+          .join("");
+      };
+
+      fetchData("indian");
+
+      american.addEventListener("click", () => {
+        fetchData("american");
+      });
+      indian.addEventListener("click", () => {
+        fetchData("indian");
+      });
+      thai.addEventListener("click", () => {
+        fetchData("thai");
+      });
+      canadian.addEventListener("click", () => {
+        fetchData("canadian");
+      });
+      british.addEventListener("click", () => {
+        fetchData("british");
+      });
+      russian.addEventListener("click", () => {
+        fetchData("russian");
+      });
+    </script>
   </body>
 </html>
